@@ -2,10 +2,13 @@ import os
 import warnings
 from flask_appbuilder.security.manager import AUTH_DB
 
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:$9Mf859#@database-1.cirzszjcdoov.us-east-1.rds.amazonaws.com:5432/supersetdb'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:$9Mf859#@database-1.c9cs4cuaglbl.us-east-1.rds.amazonaws.com:5432/supersetdb'
 
 WTF_CSRF_ENABLED = True
-FEATURE_FLAGS = {"DASHBOARD_NATIVE_FILTERS": True}
+FEATURE_FLAGS = {
+    "DASHBOARD_NATIVE_FILTERS": True,
+    "ALERT_REPORTS": True,  # Enable ALERT_REPORTS feature flag
+}
 CACHE_CONFIG = {
     'CACHE_TYPE': 'redis',
     'CACHE_DEFAULT_TIMEOUT': 300,

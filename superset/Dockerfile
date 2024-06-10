@@ -1,10 +1,10 @@
 # Use the official Apache Superset image
 FROM apache/superset:latest
 
-# Install Redis and Python (if not already included) and other dependencies
+# Install Redis, PostgreSQL client, and Python (if not already included) and other dependencies
 USER root
 RUN apt-get update && \
-    apt-get install -y python3 && \
+    apt-get install -y python3 postgresql-client && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the Superset configuration
@@ -16,11 +16,13 @@ RUN echo "SECRET_KEY = '$(python3 -c "import os; print(os.urandom(24).hex())")'"
 # Install Python packages for Google Sheets integration
 RUN pip install gspread oauth2client
 
+
 # Copy the entrypoint script and make it executable
 COPY entrypoint.sh /entrypoint.sh
 COPY start.sh /start.sh
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /start.sh
+
 # Install headless Chrome browser
 RUN apt-get update && apt-get install -y wget gnupg && \
     wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
@@ -33,14 +35,11 @@ ENV WEBDRIVER_TYPE=chrome
 
 # Switch back to superset user and initialize Superset
 USER superset
-#RUN superset db upgrade
-#RUN superset init
 
 # Expose the port Superset is running on
 EXPOSE 8088
 
-# Start Superset using Gunicorn
+# Start Superset using the custom start script
 ENTRYPOINT ["/entrypoint.sh"]
-#CMD ["gunicorn", "--bind", "0.0.0.0:8088", "superset.app:create_app()"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8088", "--timeout", "120", "superset.app:create_app()"]
+CMD ["/start.sh"]
 

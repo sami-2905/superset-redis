@@ -1,14 +1,5 @@
 #!/bin/bash
 
-# Start Redis in the background
-#redis-server --daemonize yes
-
-# Upgrade the database schema to the latest version
-superset db upgrade
-
-# Initialize Superset (roles, permissions)
-superset init
-
 # Create the admin user if not already present
 ADMIN_EXISTS=$(superset fab list-users | grep "admin@example.com" | wc -l)
 if [ "$ADMIN_EXISTS" -eq "0" ]; then
@@ -23,5 +14,6 @@ else
     echo "Admin user already exists, skipping creation."
 fi
 
-# Start the Superset application
-superset run -p 8088 --with-threads --reload --debugger
+# Start the Superset application using Gunicorn
+exec gunicorn --bind 0.0.0.0:8088 --timeout 120 "superset.app:create_app()"
+

@@ -13,3 +13,7 @@ app = MyCelery('worker_app', broker='redis://myredis:6379/0', backend='redis://m
 def add(x, y):
     return x + y
 
+
+
+# Ensure that tasks are discovered by celery
+app.autodiscover_tasks(['worker_app'])
